@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>คู่มือ Git แบบภาพ</title>
+    <link rel="stylesheet" type="text/css" href="visual-git-guide.css" />
+    <script type="text/javascript" src="visual-git-guide.js"></script>
+    <script
+      data-goatcounter="https://marklodato.goatcounter.com/count"
+      async
+      src="goatcounter.js"
+    ></script>
+  </head>
+  <body onload="replace_all_PNGs();">
+    <h1 id="top">คู่มือ Git แบบภาพ</h1>
+
+    <div id="language-box">
+      <a>ภาษาอื่นๆ:</a>
+      <ul>
+        <li><a href="index-de.html">Deutsch</a></li>
+        <li><a href="index-en.html">English</a></li>
+        <li><a href="index-es.html">Español</a></li>
+        <li><a href="index-fr.html">Français</a></li>
+        <li><a href="index-it.html">Italiano</a></li>
+        <li><a href="index-ja.html">日本語</a></li>
+        <li><a href="index-ko.html">한국어</a></li>
+        <li><a href="index-pl.html">Polski</a></li>
+        <li><a href="index-pt.html">Português</a></li>
+        <li><a href="index-ru.html">Русский</a></li>
+        <li><a href="index-sk.html">Slovenčina</a></li>
+        <li><a href="index-vi.html">Tiếng Việt</a></li>
+        <li><a href="index-zh-cn.html">简体中文</a></li>
+        <li><a href="index-zh-tw.html">正體中文</a></li>
+        <li><a href="index-th.html">ภาษาไทย</a></li>
+      </ul>
+    </div>
+
+    <p id="link-to-png">
+      หากรูปภาพไม่แสดง คุณสามารถลองใช้
+      <a href="?no-svg">เวอร์ชันที่ไม่ใช่ SVG</a> ของหน้านี้
+    </p>
+
+    <p id="link-to-svg">
+      ภาพ SVG ถูกปิดใช้งานแล้ว
+      <a href="index-th.html">(เปิดใช้งาน SVG อีกครั้ง)</a>
+    </p>
+
+    <p>
+      หน้านี้เป็นคู่มือแบบภาพสำหรับคำสั่ง Git ที่ใช้บ่อยที่สุด
+      หากคุณมีความรู้เกี่ยวกับการทำงานของ Git อยู่แล้ว
+      หน้านี้อาจช่วยให้คุณเข้าใจได้ชัดเจนยิ่งขึ้น หากคุณสนใจวิธีการสร้างหน้านี้
+      โปรดดูที่
+      <a href="http://github.com/MarkLodato/visual-git-guide">GitHub ของฉัน</a>.
+    </p>
+
+    <p id="link-to-d3">
+      แนะนำเพิ่มเติม:
+      <a href="http://onlywei.github.io/explain-git-with-d3/#"
+        >Visualizing Git Concepts with D3</a
+      >
+    </p>
+
+    <h2 id="contents">สารบัญ</h2>
+    <ol>
+      <li><a href="#basic-usage">การใช้งานพื้นฐาน</a></li>
+      <li><a href="#conventions">การตั้งค่า</a></li>
+      <li>
+        <a href="#commands-in-detail">คำสั่งโดยละเอียด</a>
+        <ol>
+          <li><a href="#diff">Diff</a></li>
+          <li><a href="#commit">Commit</a></li>
+          <li><a href="#checkout">Checkout</a></li>
+          <li><a href="#detached">การ Commit ด้วย Detached HEAD</a></li>
+          <li><a href="#reset">Reset</a></li>
+          <li><a href="#merge">Merge</a></li>
+          <li><a href="#cherry-pick">Cherry Pick</a></li>
+          <li><a href="#rebase">Rebase</a></li>
+        </ol>
+      </li>
+      <li><a href="#technical-notes">บันทึกทางเทคนิค</a></li>
+      <li><a href="#appendix-stage">การแสดงผลการเปลี่ยนแปลงของคำสั่ง</a></li>
+    </ol>
+
+    <h2 id="basic-usage">การใช้งานพื้นฐาน</h2>
+
+    <div class="center"><img src="basic-usage.svg.png" /></div>
+
+    <p>
+      คำสั่งทั้งสี่ด้านบนนี้จะคัดลอกไฟล์ระหว่างไดเรกทอรีทำงาน (working
+      directory), สเตจ (stage หรือที่เรียกว่าดัชนี), และประวัติ (ในรูปของคอมมิต)
+    </p>
+
+    <ul>
+      <li>
+        <code>git add <em>files</em></code> จะคัดลอก
+        <em>files</em> (ในสภาพปัจจุบัน) ไปยังสเตจ
+      </li>
+
+      <li><code>git commit</code> จะบันทึกสถานะของสเตจเป็นคอมมิต</li>
+
+      <li>
+        <code>git reset -- <em>files</em></code> จะนำไฟล์ออกจากสเตจ;
+        หมายความว่าจะคัดลอก <em>files</em> จากคอมมิตล่าสุดไปยังสเตจ
+        ใช้คำสั่งนี้เพื่อล้าง <code>git add <em>files</em></code
+        >. คุณยังสามารถใช้ <code>git reset</code> เพื่อถอนสเตจทุกอย่างได้ด้วย
+      </li>
+
+      <li>
+        <code>git checkout -- <em>files</em></code> จะคัดลอก
+        <em>files</em> จากสเตจไปยังไดเรกทอรีทำงาน
+        ใช้คำสั่งนี้เพื่อลบการเปลี่ยนแปลงท้องถิ่น
+      </li>
+    </ul>
+
+    <p>
+      คุณสามารถใช้ <code>git reset -p</code>, <code>git checkout -p</code>, หรือ
+      <code>git add -p</code> แทน (หรือเพิ่มเติมจาก)
+      การระบุไฟล์เฉพาะเพื่อเลือกอย่างเชิงโต้ตอบว่าจะแยกฮังก์ใดบ้าง
+    </p>
+
+    <p>
+      ยังเป็นไปได้ที่จะข้ามสเตจและตรวจสอบไฟล์โดยตรงจากประวัติหรือคอมมิตไฟล์โดยไม่ต้องสเตจก่อน
+    </p>
+
+    <div class="center"><img src="basic-usage-2.svg.png" /></div>
+
+    <ul>
+      <li>
+        <code>git commit -a </code> จะเท่ากับการรัน
+        <tt>git add</tt> ในทุกไฟล์ที่มีในคอมมิตล่าสุด แล้วตามด้วย
+        <tt>git commit</tt>.
+      </li>
+
+      <li>
+        <code>git commit <em>files</em></code>
+        จะสร้างคอมมิตใหม่ที่มีเนื้อหาของคอมมิตล่าสุดพร้อมกับภาพรวมของ
+        <em>files</em> ที่ถ่ายจากไดเรกทอรีทำงาน นอกจากนี้
+        <em>files</em> จะถูกคัดลอกไปยังสเตจ
+      </li>
+
+      <li>
+        <code>git checkout HEAD -- <em>files</em></code> จะคัดลอก
+        <em>files</em> จากคอมมิตล่าสุดไปยังทั้งสเตจและไดเรกทอรีทำงาน
+      </li>
+    </ul>
+
+    <h2 id="conventions">การตั้งค่า</h2>
+
+    <p>ในส่วนที่เหลือของเอกสารนี้ เราจะใช้กราฟในรูปแบบดังต่อไปนี้</p>
+
+    <div class="center"><img src="conventions.svg.png" /></div>
+
+    <p>
+      คอมมิตจะแสดงในสีเขียวเป็น ID ที่มี 5 อักขระ และจะชี้ไปยังพ่อแม่ของพวกเขา
+      สาขาจะแสดงในสีส้มและจะชี้ไปยังคอมมิตที่เฉพาะเจาะจง
+      สาขาปัจจุบันถูกระบุโดยการอ้างอิงพิเศษ <em>HEAD</em> ซึ่ง "ติด" กับสาขานั้น
+      ในภาพนี้คอมมิตห้าคอมมิตล่าสุดจะแสดงอยู่โดยมี
+      <em>ed489</em> เป็นคอมมิตล่าสุด <em>main</em> (สาขาปัจจุบัน)
+      ชี้ไปยังคอมมิตนี้ ในขณะที่ <em>stable</em> (สาขาอื่น)
+      ชี้ไปยังบรรพบุรุษของคอมมิตของ <em>main</em>.
+    </p>
+
+    <h2 id="commands-in-detail">คำสั่งโดยละเอียด</h2>
+
+    <h3 id="diff">Diff</h3>
+
+    <p>
+      มีหลายวิธีในการดูความแตกต่างระหว่างคอมมิต
+      ด้านล่างนี้เป็นตัวอย่างที่พบเห็นได้บ่อย
+      คำสั่งเหล่านี้สามารถรับอาร์กิวเมนต์ชื่อไฟล์เพิ่มเติมเพื่อลดความแตกต่างไปยังไฟล์ที่ระบุได้
+    </p>
+
+    <div class="center"><img src="diff.svg.png" /></div>
+
+    <h3 id="commit">Commit</h3>
+
+    <p>
+      เมื่อคุณคอมมิต Git
+      จะสร้างออบเจ็กต์คอมมิตใหม่โดยใช้ไฟล์จากสเตจและตั้งพ่อแม่เป็นคอมมิตปัจจุบัน
+      จากนั้นจะชี้สาขาปัจจุบันไปยังคอมมิตใหม่ ในภาพด้านล่าง สาขาปัจจุบันคือ
+      <em>main</em>. ก่อนที่จะรันคำสั่ง <em>main</em> ชี้ไปที่ <em>ed489</em>.
+      หลังจากนั้น คอมมิตใหม่ <em>f0cec</em> ถูกสร้างขึ้นพร้อมกับพ่อแม่
+      <em>ed489</em> และจากนั้น <em>main</em> ถูกย้ายไปที่คอมมิตใหม่
+    </p>
+
+    <div class="center"><img src="commit-main.svg.png" /></div>
+
+    <p>
+      กระบวนการนี้จะเกิดขึ้นแม้ว่าสาขาปัจจุบันจะเป็นบรรพบุรุษของอีกสาขาหนึ่ง
+      ด้านล่างนี้ การคอมมิตเกิดขึ้นในสาขา <em>stable</em> ซึ่งเป็นบรรพบุรุษของ
+      <em>main</em> ส่งผลให้ <em>1800b</em>. หลังจากนั้น
+      <em>stable</em> ไม่เป็นบรรพบุรุษของ <em>main</em> อีกต่อไป
+      เพื่อเชื่อมโยงประวัติทั้งสองนี้ จำเป็นต้องใช้
+      <a href="#merge">merge</a> (หรือ <a href="#rebase">rebase</a>)
+    </p>
+
+    <div class="center"><img src="commit-stable.svg.png" /></div>
+
+    <p>
+      บางครั้งเกิดข้อผิดพลาดในการคอมมิต แต่สามารถแก้ไขได้ง่ายๆ โดยใช้
+      <code>git commit --amend</code>. เมื่อคุณใช้คำสั่งนี้ Git
+      จะสร้างคอมมิตใหม่ที่มีพ่อแม่เหมือนกับคอมมิตปัจจุบัน
+      (คอมมิตเก่าจะถูกลบหากไม่มีอะไรอ้างอิงถึงมัน)
+    </p>
+
+    <div class="center"><img src="commit-amend.svg.png" /></div>
+
+    <p>
+      กรณีที่สี่คือการคอมมิตด้วย
+      <a href="#detached">detached HEAD</a> ตามที่อธิบายไว้ต่อไป
+    </p>
+
+    <h3 id="checkout">Checkout</h3>
+
+    <p>
+      คำสั่ง checkout ใช้ในการคัดลอกไฟล์จากประวัติ (หรือสเตจ)
+      ไปยังไดเรกทอรีทำงาน และเปลี่ยนสาขาได้หากต้องการ
+    </p>
+
+    <p>
+      เมื่อระบุชื่อไฟล์ (และ/หรือ <code>-p</code>) Git
+      จะคัดลอกไฟล์เหล่านั้นจากคอมมิตที่ระบุไปยังสเตจและไดเรกทอรีทำงาน
+      ตัวอย่างเช่น <code>git checkout HEAD~ foo.c</code> คัดลอกไฟล์
+      <code>foo.c</code> จากคอมมิตที่เรียกว่า
+      <em>HEAD~</em> (พ่อแม่ของคอมมิตปัจจุบัน) ไปยังไดเรกทอรีทำงาน
+      และยังสเตจมันอีกด้วย (หากไม่ระบุชื่อคอมมิต ไฟล์จะถูกคัดลอกจากสเตจ)
+      โปรดทราบว่าสาขาปัจจุบันจะไม่ถูกเปลี่ยนแปลง
+    </p>
+
+    <div class="center"><img src="checkout-files.svg.png" /></div>
+
+    <p>
+      เมื่อไม่ได้ระบุชื่อไฟล์แต่การอ้างอิงเป็นสาขาท้องถิ่น
+      <em>HEAD</em> จะถูกย้ายไปยังสาขานั้น (นั่นคือเรา "สลับไปที่" สาขานั้น)
+      จากนั้นสเตจและไดเรกทอรีทำงานจะถูกตั้งค่าให้ตรงกับเนื้อหาของคอมมิตนั้น
+      ไฟล์ใดๆ ที่มีอยู่ในคอมมิตใหม่ (<em>a47c3</em> ด้านล่าง) จะถูกคัดลอก;
+      ไฟล์ใดๆ ที่มีอยู่ในคอมมิตเก่า (<em>ed489</em>)
+      แต่ไม่อยู่ในคอมมิตใหม่จะถูกลบ; และไฟล์ใดๆ
+      ที่ไม่มีอยู่ในทั้งสองจะถูกเพิกเฉย
+    </p>
+
+    <div class="center"><img src="checkout-branch.svg.png" /></div>
+
+    <p>
+      เมื่อไม่ได้ระบุชื่อไฟล์และการอ้างอิงไม่ใช่สาขาท้องถิ่น &mdash;
+      สมมติว่ามันเป็นแท็ก, สาขารีโมต, ID SHA-1, หรือบางอย่างเช่น
+      <em>main~3</em> &mdash; เราจะได้สาขาที่ไม่มีชื่อ, เรียกว่า
+      <em>detached HEAD</em>. นี่มีประโยชน์ในการข้ามประวัติ
+      สมมติว่าคุณต้องการคอมไพล์ Git เวอร์ชัน 1.6.6.1 คุณสามารถ
+      <code>git checkout v1.6.6.1</code> (ซึ่งเป็นแท็กไม่ใช่สาขา), คอมไพล์,
+      ติดตั้ง, แล้วจากนั้น สลับกลับไปที่สาขาอื่น, สมมติว่า
+      <code>git checkout main</code>.
+      อย่างไรก็ตามการคอมมิตทำงานต่างออกไปเล็กน้อยเมื่อใช้ detached HEAD;
+      นี้จะถูกอธิบาย <a href="#detached">ด้านล่าง</a>.
+    </p>
+
+    <div class="center"><img src="checkout-detached.svg.png" /></div>
+
+    <h3 id="detached">การ Commit ด้วย Detached HEAD</h3>
+
+    <p>
+      เมื่อ <em>HEAD</em> เป็น detached
+      การคอมมิตทำงานเหมือนปกติยกเว้นว่าสาขาที่มีชื่อจะไม่ถูกอัพเดท
+      (คุณสามารถคิดว่ามันเป็นสาขาที่ไม่มีชื่อ)
+    </p>
+
+    <div class="center"><img src="commit-detached.svg.png" /></div>
+
+    <p>
+      เมื่อคุณเช็คเอาต์สิ่งอื่น เช่น <em>main</em> คอมมิต (ที่คาดว่า)
+      จะไม่ถูกอ้างอิงโดยสิ่งอื่นใดและสูญหาย โปรดทราบว่า
+      หลังจากรันคำสั่งแล้วไม่มีสิ่งใดอ้างอิงถึง <em>2eecb</em>.
+    </p>
+
+    <div class="center"><img src="checkout-after-detached.svg.png" /></div>
+
+    <p>
+      หากในทางกลับกันคุณต้องการบันทึกสถานะนี้คุณสามารถสร้างสาขาที่มีชื่อใหม่โดยใช้
+      <code>git checkout -b <em>ชื่อ</em></code
+      >.
+    </p>
+
+    <div class="center"><img src="checkout-b-detached.svg.png" /></div>
+
+    <h3 id="reset">Reset</h3>
+
+    <p>
+      คำสั่ง reset
+      จะย้ายสาขาปัจจุบันไปยังตำแหน่งอื่นและอัพเดทสเตจและไดเรกทอรีทำงานตามต้องการ
+      นอกจากนี้ยังใช้เพื่อคัดลอกไฟล์จากประวัติไปยังสเตจโดยไม่แตะต้องไดเรกทอรีทำงาน
+    </p>
+
+    <p>
+      หากระบุคอมมิตโดยไม่มีชื่อไฟล์
+      สาขาปัจจุบันจะถูกย้ายไปยังคอมมิตนั้นและจากนั้นสเตจจะถูกอัพเดทให้ตรงกับคอมมิตนี้
+      หากระบุ <code>--hard</code> ไดเรกทอรีทำงานจะถูกอัพเดทด้วย หากระบุ
+      <code>--soft</code> ทั้งสองจะไม่ถูกอัพเดท
+    </p>
+
+    <div class="center"><img src="reset-commit.svg.png" /></div>
+
+    <p>
+      หากไม่ระบุคอมมิต มันจะถูกตั้งเป็น <em>HEAD</em> ตามค่าเริ่มต้น
+      ในกรณีนี้สาขาจะไม่ถูกย้าย แต่สเตจ (และไดเรกทอรีทำงานหากระบุ
+      <code>--hard</code>) จะถูกรีเซ็ตให้ตรงกับเนื้อหาของคอมมิตล่าสุด
+    </p>
+
+    <div class="center"><img src="reset.svg.png" /></div>
+
+    <p>
+      หากระบุชื่อไฟล์ (และ/หรือ <code>-p</code>) คำสั่งจะทำงานคล้ายกับ
+      <a href="#checkout">checkout</a> กับชื่อไฟล์ ยกเว้นว่าเฉพาะสเตจ
+      (ไม่ใช่ไดเรกทอรีทำงาน) จะถูกอัพเดท
+      (คุณสามารถระบุคอมมิตที่ต้องการนำไฟล์มาได้แทนที่จะเป็น <em>HEAD</em>).
+    </p>
+
+    <div class="center"><img src="reset-files.svg.png" /></div>
+
+    <h3 id="merge">Merge</h3>
+
+    <p>
+      การ merge จะสร้างคอมมิตใหม่ที่รวมการเปลี่ยนแปลงจากคอมมิตอื่น ก่อนการ merge
+      สเตจจะต้องตรงกับคอมมิตปัจจุบัน
+      กรณีที่ง่ายที่สุดคือหากคอมมิตอื่นเป็นบรรพบุรุษของคอมมิตปัจจุบัน
+      ในกรณีนี้จะไม่มีการทำอะไร
+      กรณีถัดมาคือหากคอมมิตปัจจุบันเป็นบรรพบุรุษของคอมมิตอื่น
+      นี่จะส่งผลให้เกิดการ merge แบบ
+      <em>fast-forward</em>
+      การอ้างอิงจะถูกย้ายและจากนั้นคอมมิตใหม่จะถูกเช็คเอาต์
+    </p>
+
+    <div class="center"><img src="merge-ff.svg.png" /></div>
+
+    <p>
+      หากไม่ใช่กรณีนี้จำเป็นต้องทำการ merge "จริง" คุณสามารถเลือกกลยุทธ์อื่นๆ
+      ได้ แต่ค่าเริ่มต้นคือการ merge แบบ "recursive" ซึ่งจะนำคอมมิตปัจจุบัน (<em
+        >ed489</em
+      >
+      ด้านล่าง), คอมมิตอื่น (<em>33104</em>), และบรรพบุรุษที่ใช้ร่วมกัน
+      (<em>b325c</em>), และทำ
+      <a href="http://en.wikipedia.org/wiki/Three-way_merge">การ merge สามทาง</a
+      >. ผลลัพธ์จะถูกบันทึกไปยังไดเรกทอรีทำงานและสเตจ จากนั้นจะเกิดคอมมิต
+      โดยมีพ่อแม่เพิ่มเข้ามาอีกคนหนึ่ง (<em>33104</em>) สำหรับคอมมิตใหม่
+    </p>
+
+    <div class="center"><img src="merge.svg.png" /></div>
+
+    <h3 id="cherry-pick">Cherry Pick</h3>
+
+    <p>
+      คำสั่ง cherry-pick "คัดลอก"
+      คอมมิตโดยสร้างคอมมิตใหม่ในสาขาปัจจุบันพร้อมกับข้อความและแพทช์เดียวกันกับคอมมิตอื่น
+    </p>
+
+    <div class="center"><img src="cherry-pick.svg.png" /></div>
+
+    <h3 id="rebase">Rebase</h3>
+
+    <p>
+      การ rebase เป็นอีกวิธีหนึ่งแทนการ
+      <a href="#merge">merge</a> เพื่อรวมหลายสาขา ในขณะที่การ merge
+      สร้างคอมมิตเดียวที่มีพ่อแม่สองคนทิ้งประวัติที่ไม่เป็นเส้นตรง การ rebase
+      จะนำคอมมิตจากสาขาปัจจุบันไปยังอีกสาขาหนึ่งทิ้งประวัติที่เป็นเส้นตรง
+      ในสาระสำคัญนี่เป็นวิธีการอัตโนมัติในการทำ
+      <a href="#cherry-pick">cherry-pick</a> หลายๆ ครั้งติดต่อกัน
+    </p>
+
+    <div class="center"><img src="rebase.svg.png" /></div>
+
+    <p>
+      คำสั่งด้านบนจะนำคอมมิตทั้งหมดที่มีอยู่ใน <em>topic</em> แต่ไม่อยู่ใน
+      <em>main</em> (ได้แก่ <em>169a6</em> และ <em>2c33a</em>), นำไปยัง
+      <em>main</em>, และจากนั้นย้ายหัวของสาขาไปยังปลายใหม่
+      โปรดทราบว่าคอมมิตเก่าจะถูก garbage collected
+      หากไม่มีการอ้างอิงถึงพวกมันอีกต่อไป
+    </p>
+
+    <p>
+      เพื่อจำกัดจำนวนการย้อนกลับให้ใช้ตัวเลือก <code>--onto</code>.
+      คำสั่งต่อไปนี้จะนำคอมมิตล่าสุดในสาขาปัจจุบันนับตั้งแต่
+      <em>169a6</em> (ไม่รวม), ได้แก่ <em>2c33a</em>, ไปยัง <em>main</em>.
+    </p>
+
+    <div class="center"><img src="rebase-onto.svg.png" /></div>
+
+    <p>
+      ยังมี <code>git rebase --interactive</code>,
+      ซึ่งช่วยให้คุณทำสิ่งที่ซับซ้อนกว่าการนำคอมมิตกลับไปยัง ซึ่งรวมถึงการลบ,
+      การเรียงลำดับใหม่, การแก้ไข, และการรวมคอมมิต
+      ไม่มีภาพที่เห็นได้ชัดเจนสำหรับสิ่งนี้; โปรดดูที่
+      <a
+        href="http://www.kernel.org/pub/software/scm/git/docs/git-rebase.html#_interactive_mode"
+        >git-rebase(1)</a
+      >
+      สำหรับรายละเอียดเพิ่มเติม
+    </p>
+
+    <h2 id="technical-notes">บันทึกทางเทคนิค</h2>
+
+    <p>
+      เนื้อหาของไฟล์จะไม่ถูกจัดเก็บในดัชนี (<em>.git/index</em>)
+      หรือในออบเจ็กต์คอมมิต แต่ละไฟล์จะถูกจัดเก็บในฐานข้อมูลออบเจ็กต์
+      (<em>.git/objects</em>) เป็น <em>blob</em>, ที่ระบุโดย hash SHA-1 ของมัน
+      ไฟล์ดัชนีจะระบุชื่อไฟล์พร้อมกับตัวระบุของ blob ที่เกี่ยวข้อง,
+      รวมทั้งข้อมูลอื่นๆ บางส่วน สำหรับคอมมิตมีประเภทข้อมูลเพิ่มเติม,
+      ที่เรียกว่า <em>tree</em>, ซึ่งระบุด้วย hash ของมันเช่นกัน Trees
+      สอดคล้องกับไดเรกทอรีในไดเรกทอรีทำงานและมีรายการของ trees และ blobs
+      ที่สอดคล้องกับแต่ละชื่อไฟล์ในไดเรกทอรีนั้น คอมมิตแต่ละอันจัดเก็บตัวระบุของ
+      tree ระดับบนสุดของมัน, ซึ่งในทางกลับกันมี blobs และ trees อื่นๆ
+      ที่เกี่ยวข้องกับคอมมิตนั้นทั้งหมด.
+    </p>
+
+    <p>
+      หากคุณทำคอมมิตโดยใช้ detached HEAD
+      คอมมิตสุดท้ายจะยังคงถูกอ้างอิงโดยบางสิ่ง: การรีเฟล็กสำหรับ HEAD
+      อย่างไรก็ตาม สิ่งนี้จะหมดอายุหลังจากเวลาหนึ่ง ดังนั้นคอมมิตจะถูก garbage
+      collected ในที่สุด, คล้ายกับคอมมิตที่ถูกทิ้งด้วย
+      <code>git commit --amend</code> หรือ <code>git rebase</code>.
+    </p>
+
+    <h2 id="appendix-stage">การแสดงผลการเปลี่ยนแปลงของคำสั่ง</h2>
+
+    <p>
+      คู่มือด้านล่างนี้จะแสดงการเปลี่ยนแปลงในรีโพสิทอรีเพื่อให้คุณเห็นผลลัพธ์ของคำสั่งในเวลาจริง
+      คล้ายกับที่
+      <a href="http://onlywei.github.io/explain-git-with-d3/#"
+        >Visualizing Git Concepts with D3</a
+      >
+      จำลองมันแบบภาพ หวังว่าคุณจะพบว่ามันมีประโยชน์
+    </p>
+
+    <p>เริ่มต้นด้วยการสร้างรีโพสิทอรีบางอย่าง:</p>
+
+    <pre><code>$ <strong>git init foo</strong>
+$ <strong>cd foo</strong>
+$ <strong>echo 1 &gt; myfile</strong>
+$ <strong>git add myfile</strong>
+$ <strong>git commit -m "เวอร์ชัน 1"</strong>
+</code></pre>
+
+    <p>ตอนนี้กำหนดฟังก์ชันต่อไปนี้เพื่อช่วยแสดงข้อมูล:</p>
+
+    <pre><code>show_status() {
+  echo "HEAD:     $(git cat-file -p HEAD:myfile)"
+  echo "Stage:    $(git cat-file -p :myfile)"
+  echo "Worktree: $(cat myfile)"
+}
+
+initial_setup() {
+  echo 3 &gt; myfile
+  git add myfile
+  echo 4 &gt; myfile
+  show_status
+}
+</code></pre>
+
+    <p>ในขั้นต้น ทุกอย่างอยู่ที่เวอร์ชัน 1</p>
+
+    <pre><code>$ <strong>show_status</strong>
+HEAD:     1
+Stage:    1
+Worktree: 1
+</code></pre>
+
+    <p>เราสามารถดูสถานะการเปลี่ยนแปลงได้เมื่อเราเพิ่มและคอมมิต</p>
+
+    <pre><code>$ <strong>echo 2 &gt; myfile</strong>
+$ <strong>show_status</strong>
+HEAD:     1
+Stage:    1
+Worktree: 2
+$ <strong>git add myfile</strong>
+$ <strong>show_status</strong>
+HEAD:     1
+Stage:    2
+Worktree: 2
+$ <strong>git commit -m "เวอร์ชัน 2"</strong>
+[main 4156116] เวอร์ชัน 2
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ <strong>show_status</strong>
+HEAD:     2
+Stage:    2
+Worktree: 2
+</code></pre>
+
+    <p>ตอนนี้เรามาสร้างสถานะเริ่มต้นที่ทั้งสามต่างกัน</p>
+
+    <pre><code>$ <strong>initial_setup</strong>
+HEAD:     2
+Stage:    3
+Worktree: 4
+</code></pre>
+
+    <p>มาดูกันว่าคำสั่งแต่ละคำสั่งทำอะไร คุณจะเห็นว่ามันตรงกับภาพด้านบน</p>
+
+    <p><code>git reset -- myfile</code> คัดลอกจาก HEAD ไปยังสเตจ:</p>
+
+    <pre><code>$ <strong>initial_setup</strong>
+HEAD:     2
+Stage:    3
+Worktree: 4
+$ <strong>git reset -- myfile</strong>
+Unstaged changes after reset:
+M   myfile
+$ <strong>show_status</strong>
+HEAD:     2
+Stage:    2
+Worktree: 4
+</code></pre>
+
+    <p><code>git checkout -- myfile</code> คัดลอกจากสเตจไปยังไดเรกทอรีทำงาน:</p>
+
+    <pre><code>$ <strong>initial_setup</strong>
+HEAD:     2
+Stage:    3
+Worktree: 4
+$ <strong>git checkout -- myfile</strong>
+$ <strong>show_status</strong>
+HEAD:     2
+Stage:    3
+Worktree: 3
+</code></pre>
+
+    <p>
+      <code>git checkout HEAD -- myfile</code> คัดลอกจาก HEAD
+      ไปยังทั้งสเตจและไดเรกทอรีทำงาน:
+    </p>
+
+    <pre><code>$ <strong>initial_setup</strong>
+HEAD:     2
+Stage:    3
+Worktree: 4
+$ <strong>git checkout HEAD -- myfile</strong>
+$ <strong>show_status</strong>
+HEAD:     2
+Stage:    2
+Worktree: 2
+</code></pre>
+
+    <p>
+      <code>git commit myfile</code> คัดลอกจากไดเรกทอรีทำงานไปยังทั้งสเตจและ
+      HEAD:
+    </p>
+
+    <pre><code>$ <strong>initial_setup</strong>
+HEAD:     2
+Stage:    3
+Worktree: 4
+$ <strong>git commit myfile -m "เวอร์ชัน 4"</strong>
+[main 679ff51] เวอร์ชัน 4
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ <strong>show_status</strong>
+HEAD:     4
+Stage:    4
+Worktree: 4
+</code></pre>
+
+    <hr />
+
+    <p>
+      ลิขสิทธิ์ &copy; 2010, <a href="mailto:lodatom@gmail.com">Mark Lodato</a>.
+      ลิขสิทธิ์การแปลภาษาญี่ปุ่น &copy; 2010,
+      <a href="http://github.com/kazu-yamamoto">Kazu Yamamoto</a>.
+      ลิขสิทธิ์การแปลภาษาเกาหลี &copy; 2011,
+      <a href="mailto:sean@weaveus.com">Sean Lee</a>. ลิขสิทธิ์การแปลภาษารัสเซีย
+      &copy; 2012, <a href="mailto:alex@sychev.com">Alex Sychev</a>.
+      ลิขสิทธิ์การแปลภาษาฝรั่งเศส &copy; 2012,
+      <a href="mailto:michel.lefranc@gmail.com">Michel Lefranc</a>.
+      ลิขสิทธิ์การแปลภาษาจีน &copy; 2012,
+      <a href="mailto:ellrywych@gmail.com">wych</a>. ลิขสิทธิ์การแปลภาษาสเปน
+      &copy; 2012, <a href="http://www.delucas.com.ar">Lucas Videla</a>.
+      ลิขสิทธิ์การแปลภาษาอิตาลี &copy; 2012,
+      <a href="mailto:daniel.londero@gmail.com">Daniel Londero</a>.
+      ลิขสิทธิ์การแปลภาษาเยอรมัน &copy; 2013,
+      <a href="mailto:mafulafunk@gmail.com">Martin Funk</a>.
+      ลิขสิทธิ์การแปลภาษาสโลวัก &copy; 2013,
+      <a href="https://github.com/llucenic">Ľudovít Lučenič</a>.
+      ลิขสิทธิ์การแปลภาษาโปรตุเกส &copy; 2014,
+      <a href="mailto:goliveira5d@gmail.com">Gustavo de Oliveira</a>.
+      ลิขสิทธิ์การแปลภาษาจีนตัวเต็ม &copy; 2015,
+      <a href="https://github.com/PeterDaveHello">Peter Dave Hello</a>.
+      ลิขสิทธิ์การแปลภาษาโปแลนด์ &copy; 2017,
+      <a href="mailto:wypychemil@gmail.com">Emil Wypych</a>.
+    </p>
+
+    <p>
+      <a
+        rel="license"
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/us/"
+        ><img
+          alt=""
+          src="https://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"
+      /></a>
+      งานนี้ได้รับการอนุญาตภายใต้
+      <a
+        rel="license"
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/us/"
+        >สัญญาอนุญาตครีเอทีฟคอมมอนส์
+        ประเภทการระบุแหล่งที่มา-ไม่ใช้เพื่อการค้า-อนุญาตให้ใช้แบบเดียวกัน 3.0
+        สหรัฐอเมริกา</a
+      >.
+    </p>
+
+    <p><a href="translate-en.html">ต้องการแปลเป็นภาษาอื่นหรือไม่?</a></p>
+  </body>
+</html>
